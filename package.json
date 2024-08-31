@@ -1,0 +1,27 @@
+{
+  "name": "git-opt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.5.1",
+    "@vitest/ui": "^2.0.5",
+    "bumpp": "^9.5.2",
+    "pathe": "^1.1.2",
+    "tsup": "^8.2.4",
+    "typecheck": "^0.1.2",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
+    "vitest": "^2.0.5"
+  },
+  "dependencies": {
+    "inferred-types": "^0.48.3",
+    "sharp": "^0.33.5"
+  }
+}
