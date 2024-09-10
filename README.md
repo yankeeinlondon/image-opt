@@ -39,6 +39,11 @@ io public/foobar.jpg --to dist --sizes=1024,640,320
 io
 # break any cached conversions
 io -f
+
+# watch mode
+io --watch
+# or
+io -w
 ```
 
 ### Modes
