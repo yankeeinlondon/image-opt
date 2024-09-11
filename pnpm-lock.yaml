@@ -20,6 +20,9 @@ importers:
       command-line-usage:
         specifier: ^7.0.3
         version: 7.0.3
+      fast-glob:
+        specifier: ^3.3.2
+        version: 3.3.2
       inferred-types:
         specifier: ^0.49.6
         version: 0.49.6

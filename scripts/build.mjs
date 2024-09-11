@@ -50,6 +50,7 @@ try {
   console.log(
     `- copied ${chalk.blue(`${copy_src}`)} runner ${chalk.italic("bash script")} to ${chalk.blue(copy_dest)}`,
   );
+  execSync(`chmod +x "${copy_dest}"`);
 
   console.log();
   console.log(`- 🚀 build successful`);

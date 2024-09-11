@@ -3,9 +3,6 @@ export type Hasher = Awaited<ReturnType<typeof xxhash>>["h32"];
 
 export type LogVerbosity = "quiet" | "normal" | "verbose";
 
-
-
-
 export type ImageCache = {
   lastUpdated: number;
   /**
@@ -13,16 +10,6 @@ export type ImageCache = {
    * and the value is a hash of the file's size and atime.
    */
   items: Record<string, number>;
-}
-
-
-export type SourceConfig = {
-  
-}
-
-export type ConfigFile = {
-
-}
-
+};
 
 export type CacheState = "missing" | "fresh" | "stale";

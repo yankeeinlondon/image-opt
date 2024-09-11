@@ -1,25 +1,26 @@
 import { join } from "node:path";
-import sharp, {
-  OutputOptions,
-} from "sharp";
-import { SharpMetadata, SharpConfig } from "../types/sharp-types";
+import sharp, { OutputOptions } from "sharp";
+import { SharpMetadata, PerFormatOptions } from "../types/sharp-types";
 import { omit } from "inferred-types";
 
 export function useSimd() {
   sharp.simd(true);
 }
 
-
-
-function outFilename(dir: string, name: string, width: number, format: SharpImageFormat) {
+function outFilename(
+  dir: string,
+  name: string,
+  width: number,
+  format: SharpImageFormat,
+) {
   return join(dir, `${name}-${width}.${format}`);
 }
 
 /**
  * Do image transforms with the [Sharp](https://sharp.pixelplumbing.com/) library.
  */
-export function useSharp<T extends SharpConfig>(options: T) {
-  const o: SharpConfig = {
+export function useSharp<T extends PerFormatOptions>(options: T) {
+  const o: PerFormatOptions = {
     simd: true,
     jpg: {
       quality: 60,
@@ -42,7 +43,7 @@ export function useSharp<T extends SharpConfig>(options: T) {
     const result = sharp.simd();
     if (!result) {
       console.log(
-        `- Sharp attempted to establish use of simd acceleration but hardware platform did not allow it.`
+        `- Sharp attempted to establish use of simd acceleration but hardware platform did not allow it.`,
       );
     }
   }
@@ -56,7 +57,7 @@ export function useSharp<T extends SharpConfig>(options: T) {
       outDir: string,
       width: number,
       format: SharpImageFormat,
-      options: OutputOptions = {}
+      options: OutputOptions = {},
     ): Promise<IImageCacheRef> => {
       const name = getFileComponents(image).fileWithoutExt;
       const out = outFilename(outDir, name, width, format);
@@ -82,11 +83,14 @@ export function useSharp<T extends SharpConfig>(options: T) {
           } as IImageCacheRef;
         })
         .catch((error) => {
-          throw new ImageError(`Problem writing file ${out}! ${error.message}`, "io/saving-image");
+          throw new ImageError(
+            `Problem writing file ${out}! ${error.message}`,
+            "io/saving-image",
+          );
         });
     },
     /**
-     * Returns the primary metadata which Sharp exposes 
+     * Returns the primary metadata which Sharp exposes
      * (minus the bulky and encoded) buffers.
      */
     getMetadata: async (source: string): Promise<ISharpMetadata> => {
@@ -105,7 +109,7 @@ export function useSharp<T extends SharpConfig>(options: T) {
       source: string,
       outDir: string,
       width: number | number[],
-      options: OutputOptions & { includePNG?: boolean } = {}
+      options: OutputOptions & { includePNG?: boolean } = {},
     ): Promise<IImageCacheRef[]> => {
       if (!Array.isArray(width)) {
         width = [width];
@@ -117,10 +121,12 @@ export function useSharp<T extends SharpConfig>(options: T) {
         promises.push(
           api.resizeImage(source, outDir, w, "jpg", { ...o.jpg, ...options }),
           api.resizeImage(source, outDir, w, "avif", { ...o.avif, ...options }),
-          api.resizeImage(source, outDir, w, "webp", { ...o.webp, ...options })
+          api.resizeImage(source, outDir, w, "webp", { ...o.webp, ...options }),
         );
         if (options.includePNG) {
-          promises.push(api.resizeImage(source, outDir, w, "png", { ...o.png, ...options }));
+          promises.push(
+            api.resizeImage(source, outDir, w, "png", { ...o.png, ...options }),
+          );
         }
       }
 
@@ -135,9 +141,9 @@ export function useSharp<T extends SharpConfig>(options: T) {
      */
     blurredPreImage: async (
       /** the source image */
-      source: string, 
-      outDir: string, 
-      size: number = 32
+      source: string,
+      outDir: string,
+      size: number = 32,
     ) => {
       const s = getFileComponents(source);
       const baseName = `${s.fileWithoutExt}-blurred.jpg`;

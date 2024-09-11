@@ -17,7 +17,7 @@ export const defaultImageFormats = ask.checkbox(
 );
 
 export const defaultImageSizes = ask.checkbox(
-  "defaultSizes",
+  "sizes",
   "What image sizes should be the 'default' image sizes we'll scale the source images to when optimizing? Units represent pixels and are meant to match the image width not height.",
   [64, 128, 256, 512, 768, 1024, 1200, 1600, 2400],
   {
@@ -26,24 +26,47 @@ export const defaultImageSizes = ask.checkbox(
 );
 
 export const defaultMetaPolicy = ask.select(
-  "defaultMetaPolicy",
+  "metaPolicy",
   "What would you like your default policy to be regarding metadata in source images being preserved into optimized images?",
   {
     "Remove all metadata": "remove",
     "Keep all metadata": "keep",
-    "Choose policy on specific properties": "custom",
+    // "Choose policy on specific properties": "custom",
   },
   {
     default: "remove",
   },
 );
 
+export const useP3Images = ask.confirm(
+  "useP3",
+  "Do you want to produce P3 colorspaced images (in addition to sRGB images)?",
+);
+
+export const defaultOutputDir = ask.input(
+  "outputDirectory",
+  "What should be the default output directory for optimized images?",
+  {
+    default: "public",
+  },
+);
+
+export const startWithSharpDefaults = ask.confirm(
+  "ok",
+  "Are you ok to use Sharp's defaults as a starting point for your defaults?",
+);
+
 export const sourceGlob = ask.input(
-  "sourceGlob",
+  "glob",
   "Each 'source rule' in your configuration will have a 'glob pattern' to identify the files it includes as source images. You need at least one rule to have Image Opt make any optimizations so let's setup that glob patterns now.",
   {
     default: "design-assets/**/*.{jpg,png,tiff}",
   },
+);
+
+export const confirmNoOverrides = ask.confirm(
+  "noOverrides",
+  "Can we keep your default configuration for this source for now?",
 );
 
 export const sourceFormats = ask
@@ -93,15 +116,18 @@ export const sourceMetaPolicy = ask
   );
 
 /**
- * A user survey which provides all data needed to setup an initial configuration for
- * **Image Opt**.
+ * Asks the user for all "core" defaults before asking if other defaults are ok to keep
+ * in line with what Sharp provides.
  */
-export const initialConfiguration = survey(
+export const getCoreDefaults = survey(
   defaultImageFormats,
   defaultImageSizes,
   defaultMetaPolicy,
+  useP3Images,
+  defaultOutputDir,
+);
+
+export const getSourceGlobAndConfirmNoOverrides = survey(
   sourceGlob,
-  sourceFormats,
-  sourceImageSizes,
-  sourceMetaPolicy,
+  confirmNoOverrides,
 );
