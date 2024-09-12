@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"no tests yet\" && exit 0"
   },
   "main": "./dist/image-opt-library.umd.js",
   "module": "./dist/image-opt-library.es.js",

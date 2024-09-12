@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Optimize your source images for the web",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no tests yet\" && exit 0",
     "build": "run-s build:*",
     "build:cli": "node scripts/build.mjs",
     "build:frontend": "cd ./packages/frontend && pnpm install && pnpm build && cd -"
