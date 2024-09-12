@@ -31,7 +31,7 @@
     }
   },
   "files": [
-    "dist",
+    "bin",
     "packages/frontend/dist"
   ],
   "author": "Ken Snyder <ken@ken.net>",
