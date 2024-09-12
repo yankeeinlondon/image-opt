@@ -8,12 +8,13 @@
     "build": "vite build",
     "test": "echo \"no tests yet\" && exit 0"
   },
-  "main": "./dist/image-opt-library.umd.js",
-  "module": "./dist/image-opt-library.es.js",
+  "module": "./dist/ImageOpt.mjs",
   "exports": {
     ".": {
-      "import": "./dist/image-opt-library.es.js",
-      "require": "./dist/image-opt-library.umd.js"
+      "import": "./dist/ImageOpt.mjs"
+    },
+    "./custom": {
+      "import": "./dist/ImageElement.mjs"
     }
   },
   "files": [
@@ -33,6 +34,7 @@
     "typescript": "^5.6.2",
     "unplugin-vue-macros": "^2.11.12",
     "vite": "^5.4.4",
+    "vite-plugin-dts": "^4.2.1",
     "vite-plugin-vue-devtools": "^7.4.5",
     "vitest": "^2.1.0"
   },

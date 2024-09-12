@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import VueMacros from "unplugin-vue-macros/vite";
 import VueDevTools from "vite-plugin-vue-devtools";
+import dts from "vite-plugin-dts";
 
 export default defineConfig({
   resolve: {
@@ -20,6 +21,10 @@ export default defineConfig({
       },
     }),
     VueDevTools(),
+    dts({
+      insertTypesEntry: true,
+      include: ["src"],
+    }),
   ],
 
   build: {
