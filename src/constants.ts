@@ -23,7 +23,8 @@ export const OUTPUT_FILE_EXT = [
 export const CACHE_FILE = `.img-cache.json` as const;
 export const CONFIG_FILE = `.img-config.json` as const;
 
-export const BLURRED_SIZE = 64;
+export const BLURRED_SIZE = 128;
+export const BLURRED_AMOUNT = 5;
 
 export const SHARP_DEFAULTS_FOR_IMAGE_FORMATS = {
   jpg: {

@@ -1,4 +1,4 @@
-import { getSourceOutputs, log, removePath, shout } from "src/utils";
+import { getSourceOutputs, log, shout, whisper } from "src/utils";
 import { AsOption } from "./cli-types";
 import chalk from "chalk";
 import { CONFIG_FILE } from "src/constants";
@@ -6,6 +6,7 @@ import { exit } from "process";
 import { getConfigFile, hasConfigFile } from "src/cache";
 import { sourceImages } from "src/utils/sourceImages";
 import { isDefined } from "inferred-types";
+import { fileWithoutPath } from "src/utils/fileWithoutPath";
 
 export const info_command = async (_opt: AsOption<"info">) => {
   log("info");
@@ -58,11 +59,15 @@ export const info_command = async (_opt: AsOption<"info">) => {
       let fresh = existingOutputCount.filter((f) => f.fresh);
 
       shout(
-        chalk.bold(`- ${removePath(img)}: `) + `[${formats}] x [${sizes}]${p3}`,
+        chalk.bold(`- ${fileWithoutPath(img)}: `) +
+          `[${formats}] x [${sizes}]${p3}`,
       );
 
       shout(
         `    - produces ${chalk.bold.yellow(outputs.length)} optimized image variants`,
+      );
+      whisper(
+        `    - files: ${outputs.map((i) => chalk.dim(fileWithoutPath(i.sink))).join(", ")}`,
       );
       if (existingOutputCount.length === 0) {
         shout(`    - 😬 none of the optimized images exist currently`);

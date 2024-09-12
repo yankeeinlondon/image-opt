@@ -1,4 +1,4 @@
-import { removePath } from "./removePath";
+import { fileWithoutPath } from "./fileWithoutPath";
 
 export const fileWithoutExt = (file: string) =>
-  removePath(file).replace(/\.\s*$/, "");
+  fileWithoutPath(file).replace(/\..*/, "");

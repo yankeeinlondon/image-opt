@@ -1,9 +1,18 @@
-import sharp from "sharp";
-import { BLURRED_SIZE } from "src/constants";
+import type { Sharp } from "sharp";
 import { ConfigFor } from "src/types";
-import { getOutputOptions } from "src/utils";
+import { getOutputOptions, log } from "src/utils";
 
-export const blurredImage = (src: string, dest: string, config: ConfigFor) => {
+export const blurredImage = (
+  sharp: Sharp, //
+  dest: string,
+  config: ConfigFor,
+) => {
   const [_, opt] = getOutputOptions(dest, config);
-  return sharp(src).resize(BLURRED_SIZE).blur().jpeg(opt).toFile(dest);
+
+  return sharp
+    .resize(config.blurSize)
+    .blur(config.blurAmount)
+    .toFormat("jpg")
+    .jpeg(opt)
+    .toFile(dest);
 };

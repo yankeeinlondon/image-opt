@@ -11,6 +11,7 @@ import {
   convertSizeAndFormat,
   fallbackImage,
 } from "src/optimize";
+import { isThenable } from "inferred-types";
 
 import { AsOption } from "./cli-types";
 import { hasConfigFile } from "src/cache";
@@ -18,39 +19,80 @@ import chalk from "chalk";
 import { ask } from "@yankeeinlondon/ask";
 import { setupConfiguration } from "src/interactive/setupConfiguration";
 import { exit } from "process";
+import sharp from "sharp";
+import { originalSize } from "src/optimize/originalSize";
+import { createReadStream } from "fs";
 
-const optimize = async (opt: AsOption<"optimize">) => {
+const dot = <T>(thingy: T) => {
+  if (isThenable(thingy)) {
+    thingy.then(() => {
+      process.stdout.write(chalk.yellowBright("."));
+    });
+  }
+
+  return thingy;
+};
+
+const optimize = async (_opt: AsOption<"optimize">) => {
   const sourceRules = getSourceRules();
-  const convert: Promise<any>[] = [];
+
   for (const source of sourceRules) {
     const config = configFor(source);
     const images = sourceImages(source.glob);
 
     for (const image of images) {
+      // SOURCE IMAGE STAGE
+      const conversions: Promise<any>[] = [];
+      let stream = sharp({ failOn: "none" });
+      stream.setMaxListeners(75);
+      if (config.metaPolicy === "keep") {
+        stream = stream.keepMetadata();
+      }
       const sinks = getSourceOutputs(image, source);
+      // Create Pipeline
 
       for (const s of sinks) {
         if (s.fresh) {
           process.stdout.write(chalk.green("."));
         } else {
-          process.stdout.write(chalk.yellow("."));
           switch (s.kind) {
             case "blurred":
-              convert.push(blurredImage(s.source, s.sink, config));
+              conversions.push(
+                dot(blurredImage(stream.clone(), s.sink, config)),
+              );
               break;
             case "fallback":
-              convert.push(fallbackImage(s.source, s.sink, config));
+              conversions.push(
+                dot(fallbackImage(stream.clone(), s.sink, config)),
+              );
+              break;
+            case "original":
+              conversions.push(
+                dot(originalSize(stream.clone(), s.sink, config)),
+              );
               break;
             default:
-              convert.push(convertSizeAndFormat(s.source, s.sink, config));
+              conversions.push(
+                dot(
+                  convertSizeAndFormat(stream.clone(), s.sink, s.kind, config),
+                ),
+              );
           }
         }
       }
+      createReadStream(image).pipe(stream);
+      await Promise.all(conversions).catch((err) => {
+        shout(
+          `- ${chalk.red.bold("ERROR:")} problems optimizing variants of "${image}"! ${err}`,
+        );
+
+        exit(1);
+      });
     }
   }
 
-  await Promise.all(convert);
-  log("done");
+  shout();
+  shout(`- 🎉 all optimized images created!`);
 };
 
 export const optimize_command = async (opt: AsOption<"optimize">) => {

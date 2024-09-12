@@ -16,6 +16,20 @@ export type SourceConfig = {
   useP3?: boolean;
   sizes?: number[] | undefined;
   metaPolicy?: MetaPolicy | undefined;
+  /**
+   * - the amount to blur the initial "blurred" image.
+   * - the value can between between 0.3 and 1000.
+   *
+   * The default value is `5`
+   */
+  blurAmount?: number;
+
+  /**
+   * The _size_ (in width-based pixels) of the _blurred_ image.
+   *
+   * - the default is `128` pixels.
+   */
+  blurSize?: number;
 
   outputDirectory?: string;
 };
@@ -52,6 +66,21 @@ export type ConfigFile = {
      * @default remove
      */
     metaPolicy: MetaPolicy;
+
+    /**
+     * - the amount to blur the initial "blurred" image.
+     * - the value can between between 0.3 and 1000.
+     *
+     * @default 5
+     */
+    blurAmount?: number;
+
+    /**
+     * The _size_ (in width-based pixels) of the _blurred_ image.
+     *
+     * @default 128
+     */
+    blurSize?: number;
 
     /**
      * the _default_ stance on whether **P3** colorspaced images should be produced
@@ -108,6 +137,11 @@ export type ConfigFor = {
   useP3: ConfigFile["defaults"]["useP3"];
   /** the base _output directory_ to put optimized images */
   outputDirectory: ConfigFile["defaults"]["outputDirectory"];
+
+  /** the pixel width of the blurred image */
+  blurSize: number;
+  /** the blur amount (between 0.3 and 1000) */
+  blurAmount: number;
 
   /**
    * the metadata policy for optimized image

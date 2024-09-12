@@ -3,6 +3,7 @@ import { ConfigFor, SourceConfig } from "src/types";
 import { fileWithoutExt } from "./fileWithoutExt";
 import { dirname } from "pathe";
 import { statSync } from "node:fs";
+import { BLURRED_AMOUNT, BLURRED_SIZE } from "src/constants";
 
 /**
  * merges the configuration for a specific _source config_ with the
@@ -13,6 +14,14 @@ export const configFor = (source: SourceConfig): ConfigFor => {
   const formats = source?.formats ? source.formats : defaultConfig.formats;
   const sizes = source?.sizes ? source.sizes : defaultConfig.sizes;
   const useP3 = source?.useP3 ? source.useP3 : defaultConfig.useP3;
+  const blurAmount = source?.blurAmount
+    ? source.blurAmount
+    : defaultConfig?.blurAmount || BLURRED_AMOUNT;
+
+  const blurSize = source?.blurSize
+    ? source.blurSize
+    : defaultConfig?.blurSize || BLURRED_SIZE;
+
   const metaPolicy = source?.metaPolicy
     ? source.metaPolicy
     : defaultConfig.metaPolicy;
@@ -32,6 +41,8 @@ export const configFor = (source: SourceConfig): ConfigFor => {
     metaPolicy,
     perFormatOptions,
     outputDirectory,
+    blurAmount,
+    blurSize,
 
     sourceFile: (file: string) => {
       const baseFile = fileWithoutExt(file);

@@ -165,11 +165,10 @@ var log = (...things) => {
 var shout = (...things) => {
   console.log(...things);
 };
-
-// src/utils/removePath.ts
-var removePath = (filepath) => {
-  const last = filepath.split(/[\/\\]/).pop();
-  return last;
+var whisper = (...things) => {
+  if (verbosity === "verbose") {
+    console.log(...things);
+  }
 };
 
 // src/utils/sourceImages.ts
@@ -179,8 +178,14 @@ var sourceImages = (glob) => {
   return files;
 };
 
+// src/utils/fileWithoutPath.ts
+var fileWithoutPath = (filepath) => {
+  const last = filepath.split(/[\/\\]/).pop();
+  return last;
+};
+
 // src/utils/fileWithoutExt.ts
-var fileWithoutExt = (file) => removePath(file).replace(/\.\s*$/, "");
+var fileWithoutExt = (file) => fileWithoutPath(file).replace(/\..*/, "");
 
 // node_modules/.pnpm/pathe@1.1.2/node_modules/pathe/dist/shared/pathe.ff20891b.mjs
 var _DRIVE_LETTER_START_RE = /^[A-Za-z]:\//;
@@ -360,39 +365,28 @@ var configFor = (source) => {
   const formats = source?.formats ? source.formats : defaultConfig.formats;
   const sizes = source?.sizes ? source.sizes : defaultConfig.sizes;
   const useP3 = source?.useP3 ? source.useP3 : defaultConfig.useP3;
+  const blurAmount = source?.blurAmount ? source.blurAmount : defaultConfig?.blurAmount || 5;
+  const blurSize = source?.blurSize ? source.blurSize : defaultConfig?.blurSize || 128;
+  const metaPolicy = source?.metaPolicy ? source.metaPolicy : defaultConfig.metaPolicy;
+  const perFormatOptions = source?.perFormatOptions ? source.perFormatOptions : defaultConfig.perFormatOptions;
   const outputDirectory = source?.outputDirectory ? source.outputDirectory : defaultConfig.outputDirectory;
   return {
-    /**
-     * the glob pattern used by source rule to identify source images
-     */
     glob: source.glob,
-    /** the image formats to convert to */
     formats,
-    /** the image sizes to convert to */
     sizes,
-    /** whether additional images targetting P3 colorspace should be created */
     useP3,
-    /** the base _output directory_ to put optimized images */
+    metaPolicy,
+    perFormatOptions,
     outputDirectory,
-    /**
-     * a function which will provide file based characterisics for a source image
-     * which was identified by the source rule being conveyed.
-     */
+    blurAmount,
+    blurSize,
     sourceFile: (file) => {
       const baseFile = fileWithoutExt(file);
       const dirOffset = dirname(file);
       const sourceStats = statSync(file);
       return {
-        /** the image filename without path or extension */
         baseFile,
-        /**
-         * the directory offset coming from the source image which should be
-         * applied to the destination as an offset to the base output directory
-         */
         dirOffset,
-        /**
-         * the file stats of the source image
-         */
         sourceStats
       };
     }
@@ -403,7 +397,8 @@ var configFor = (source) => {
 var produceVariants = (file, dir, config2) => {
   let variants = [];
   const { formats, sizes, useP3 } = config2;
-  variants.push(`${file}-blurred.jpg`);
+  variants.push(`${dir}/${file}.jpg`);
+  variants.push(`${dir}/${file}-blurred.jpg`);
   for (const format2 of formats) {
     const orig = `${file}-original-size.${format2}`;
     variants.push(join(dir, orig));
@@ -421,16 +416,13 @@ var produceVariants = (file, dir, config2) => {
 var getSourceOutputs = (source, sourceConfig) => {
   const config2 = configFor(sourceConfig);
   const { formats, sizes, useP3 } = config2;
-  const { baseFile, dirOffset, sourceStats } = config2.sourceFile(source);
-  const outputs = produceVariants(
-    baseFile,
-    join(config2.outputDirectory, dirOffset),
-    {
-      formats,
-      sizes,
-      useP3
-    }
-  );
+  const { baseFile, sourceStats } = config2.sourceFile(source);
+  const outputs = produceVariants(baseFile, config2.outputDirectory, {
+    formats,
+    sizes,
+    useP3
+  });
+  const kind = (key) => key.includes("-blurred") ? "blurred" : key.includes("-original-size") ? "original" : key.replace(/-[0-9]+\./, "") !== key ? key.includes("-p3") ? "p3" : "resized" : "fallback";
   const withMeta = outputs.reduce((acc, key) => {
     const exists = existsSync2(key);
     return [
@@ -438,12 +430,40 @@ var getSourceOutputs = (source, sourceConfig) => {
       {
         source,
         sink: key,
+        kind: kind(key),
         exists,
         fresh: exists && statSync2(key).mtimeMs > sourceStats.mtimeMs
       }
     ];
   }, []);
   return withMeta;
+};
+
+// src/utils/getSourceRules.ts
+var getSourceRules = () => {
+  const config2 = getConfigFile();
+  return config2.sources;
+};
+
+// src/utils/getOutputOptions.ts
+var getOutputOptions = (file, config2) => {
+  const ext = file.split(/\./).pop();
+  switch (ext) {
+    case "jpg":
+      return [ext, config2.perFormatOptions.jpg];
+    case "jxl":
+      return [ext, config2.perFormatOptions.jxl];
+    case "png":
+      return [ext, config2.perFormatOptions.png];
+    case "avif":
+      return [ext, config2.perFormatOptions.avif];
+    case "gif":
+      return [ext, config2.perFormatOptions.gif];
+    case "heif":
+      return [ext, config2.perFormatOptions.heif];
+    case "webp":
+      return [ext, config2.perFormatOptions.webp];
+  }
 };
 
 // src/cli/create_cli.ts
@@ -508,10 +528,13 @@ var info_command = async (_opt) => {
       let existingOutputCount = outputs.filter((f) => f.exists);
       let fresh = existingOutputCount.filter((f) => f.fresh);
       shout(
-        chalk2.bold(`- ${removePath(img)}: `) + `[${formats}] x [${sizes}]${p3}`
+        chalk2.bold(`- ${fileWithoutPath(img)}: `) + `[${formats}] x [${sizes}]${p3}`
       );
       shout(
         `    - produces ${chalk2.bold.yellow(outputs.length)} optimized image variants`
+      );
+      whisper(
+        `    - files: ${outputs.map((i) => chalk2.dim(fileWithoutPath(i.sink))).join(", ")}`
       );
       if (existingOutputCount.length === 0) {
         shout(`    - \u{1F62C} none of the optimized images exist currently`);
@@ -538,7 +561,64 @@ var info_command = async (_opt) => {
   }
 };
 
+// src/optimize/blurredImage.ts
+var blurredImage = (sharp2, dest, config2) => {
+  const [_, opt] = getOutputOptions(dest, config2);
+  return sharp2.resize(config2.blurSize).blur(config2.blurAmount).toFormat("jpg").jpeg(opt).toFile(dest);
+};
+
+// src/optimize/convertSizeAndFormat.ts
+var convertSizeAndFormat = (sharp2, dest, kind, config2) => {
+  const [fmt, opt] = getOutputOptions(dest, config2);
+  const size = kind === "p3" ? Number(fileWithoutExt(dest).replace("-p3", "").replace(/.*\-/, "")) : Number(fileWithoutExt(dest).replace(/.*\-/, ""));
+  if (isNaN(size)) {
+    shout(
+      `- The size value for image "${dest}" is malformed:`,
+      fileWithoutExt(dest).replace(/.*\-/, "")
+    );
+    process.exit(1);
+  }
+  if (config2.metaPolicy === "keep") {
+    sharp2 = sharp2.keepMetadata();
+  }
+  if (dest.includes("-p3")) {
+    sharp2 = sharp2.withIccProfile("p3");
+  }
+  sharp2 = sharp2.resize({
+    width: size,
+    withoutEnlargement: true
+  });
+  switch (fmt) {
+    case "jpg":
+      return sharp2.jpeg(opt).toFormat("jpg").toFile(dest);
+    case "jxl":
+      return sharp2.jxl(opt).toFormat("jxl").toFile(dest);
+    case "png":
+      return sharp2.png(opt).toFormat("png").toFile(dest);
+    case "webp":
+      return sharp2.webp(opt).toFormat("webp").toFile(dest);
+    case "avif":
+      return sharp2.avif(opt).toFormat("avif").toFile(dest);
+    case "gif":
+      return sharp2.gif(opt).toFormat("gif").toFile(dest);
+    case "heif":
+      return sharp2.heif(opt).toFormat("heif").toFile(dest);
+    default:
+      throw new Error(`invalid image format for optimized image: ${dest}`);
+  }
+};
+
+// src/optimize/fallbackImage.ts
+var fallbackImage = (sharp2, dest, config2) => {
+  const [_, opt] = getOutputOptions(dest, config2);
+  return sharp2.jpeg({ ...opt, quality: 60 }).resize({
+    width: 1600,
+    withoutEnlargement: true
+  }).toFormat("jpg").toFile(dest);
+};
+
 // src/cli/optimize_command.ts
+import { isThenable } from "inferred-types";
 import chalk4 from "chalk";
 import { ask as ask2 } from "@yankeeinlondon/ask";
 
@@ -729,7 +809,100 @@ Great! we've got a lot of the important defaults set now.
 
 // src/cli/optimize_command.ts
 import { exit as exit2 } from "process";
-var optimize = async (opt) => {
+import sharp from "sharp";
+
+// src/optimize/originalSize.ts
+var originalSize = (sharp2, dest, config2) => {
+  const [fmt, opt] = getOutputOptions(dest, config2);
+  if (config2.metaPolicy === "keep") {
+    sharp2 = sharp2.keepMetadata();
+  }
+  if (dest.includes("-p3")) {
+    sharp2 = sharp2.toColorspace("p3").withIccProfile("p3");
+  }
+  switch (fmt) {
+    case "jpg":
+      return sharp2.jpeg(opt).toFormat("jpg").toFile(dest);
+    case "jxl":
+      return sharp2.jxl(opt).toFormat("jxl").toFile(dest);
+    case "png":
+      return sharp2.png(opt).toFormat("png").toFile(dest);
+    case "webp":
+      return sharp2.webp(opt).toFormat("webp").toFile(dest);
+    case "avif":
+      return sharp2.avif(opt).toFormat("avif").toFile(dest);
+    case "gif":
+      return sharp2.gif(opt).toFormat("gif").toFile(dest);
+    case "heif":
+      return sharp2.heif(opt).toFormat("heif").toFile(dest);
+    default:
+      throw new Error(`invalid image format for optimized image: ${dest}`);
+  }
+};
+
+// src/cli/optimize_command.ts
+import { createReadStream } from "fs";
+var dot = (thingy) => {
+  if (isThenable(thingy)) {
+    thingy.then(() => {
+      process.stdout.write(chalk4.yellowBright("."));
+    });
+  }
+  return thingy;
+};
+var optimize = async (_opt) => {
+  const sourceRules = getSourceRules();
+  for (const source of sourceRules) {
+    const config2 = configFor(source);
+    const images = sourceImages(source.glob);
+    for (const image of images) {
+      const conversions = [];
+      let stream = sharp({ failOn: "none" });
+      stream.setMaxListeners(75);
+      if (config2.metaPolicy === "keep") {
+        stream = stream.keepMetadata();
+      }
+      const sinks = getSourceOutputs(image, source);
+      for (const s of sinks) {
+        if (s.fresh) {
+          process.stdout.write(chalk4.green("."));
+        } else {
+          switch (s.kind) {
+            case "blurred":
+              conversions.push(
+                dot(blurredImage(stream.clone(), s.sink, config2))
+              );
+              break;
+            case "fallback":
+              conversions.push(
+                dot(fallbackImage(stream.clone(), s.sink, config2))
+              );
+              break;
+            case "original":
+              conversions.push(
+                dot(originalSize(stream.clone(), s.sink, config2))
+              );
+              break;
+            default:
+              conversions.push(
+                dot(
+                  convertSizeAndFormat(stream.clone(), s.sink, s.kind, config2)
+                )
+              );
+          }
+        }
+      }
+      createReadStream(image).pipe(stream);
+      await Promise.all(conversions).catch((err) => {
+        shout(
+          `- ${chalk4.red.bold("ERROR:")} problems optimizing variants of "${image}"! ${err}`
+        );
+        exit2(1);
+      });
+    }
+  }
+  shout();
+  shout(`- \u{1F389} all optimized images created!`);
 };
 var optimize_command = async (opt) => {
   if (!hasConfigFile()) {

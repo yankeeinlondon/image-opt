@@ -1,9 +1,9 @@
-import sharp from "sharp";
+import { Sharp } from "sharp";
 import { ConfigFor, OptimizationKind } from "src/types";
-import { fileWithoutExt, getOutputOptions } from "src/utils";
+import { fileWithoutExt, getOutputOptions, shout } from "src/utils";
 
 export const convertSizeAndFormat = (
-  src: string,
+  sharp: Sharp,
   dest: string,
   kind: OptimizationKind,
   config: ConfigFor,
@@ -14,21 +14,42 @@ export const convertSizeAndFormat = (
       ? Number(fileWithoutExt(dest).replace("-p3", "").replace(/.*\-/, ""))
       : Number(fileWithoutExt(dest).replace(/.*\-/, ""));
 
+  if (isNaN(size)) {
+    shout(
+      `- The size value for image "${dest}" is malformed:`,
+      fileWithoutExt(dest).replace(/.*\-/, ""),
+    );
+    process.exit(1);
+  }
+
+  if (config.metaPolicy === "keep") {
+    sharp = sharp.keepMetadata();
+  }
+
+  if (dest.includes("-p3")) {
+    sharp = sharp.withIccProfile("p3");
+  }
+
+  sharp = sharp.resize({
+    width: size,
+    withoutEnlargement: true,
+  });
+
   switch (fmt) {
     case "jpg":
-      return sharp(src).jpeg(opt).resize(size).toFile(dest);
+      return sharp.jpeg(opt).toFormat("jpg").toFile(dest);
     case "jxl":
-      return sharp(src).jxl(opt).resize(size).toFile(dest);
+      return sharp.jxl(opt).toFormat("jxl").toFile(dest);
     case "png":
-      return sharp(src).png(opt).resize(size).toFile(dest);
+      return sharp.png(opt).toFormat("png").toFile(dest);
     case "webp":
-      return sharp(src).webp(opt).resize(size).toFile(dest);
+      return sharp.webp(opt).toFormat("webp").toFile(dest);
     case "avif":
-      return sharp(src).avif(opt).resize(size).toFile(dest);
+      return sharp.avif(opt).toFormat("avif").toFile(dest);
     case "gif":
-      return sharp(src).gif(opt).resize(size).toFile(dest);
+      return sharp.gif(opt).toFormat("gif").toFile(dest);
     case "heif":
-      return sharp(src).heif(opt).resize(size).toFile(dest);
+      return sharp.heif(opt).toFormat("heif").toFile(dest);
     default:
       throw new Error(`invalid image format for optimized image: ${dest}`);
   }

@@ -2,6 +2,7 @@ import { ConfigFile, OptimizationKind, SourceConfig } from "src/types";
 import { join } from "pathe";
 import { existsSync, statSync } from "fs";
 import { configFor } from "./configFor";
+import { log } from "./logging";
 
 export type SourceFileInput = {
   file: string;
@@ -32,8 +33,10 @@ const produceVariants = (
   let variants: string[] = [];
   const { formats, sizes, useP3 } = config;
 
+  // fallback image
+  variants.push(`${dir}/${file}.jpg`);
   // blurred image
-  variants.push(`${file}-blurred.jpg`);
+  variants.push(`${dir}/${file}-blurred.jpg`);
 
   for (const format of formats) {
     const orig = `${file}-original-size.${format}`;
@@ -61,17 +64,24 @@ export const getSourceOutputs = (
 ): SourceOutputFile[] => {
   const config = configFor(sourceConfig);
   const { formats, sizes, useP3 } = config;
-  const { baseFile, dirOffset, sourceStats } = config.sourceFile(source);
+  const { baseFile, sourceStats } = config.sourceFile(source);
 
-  const outputs = produceVariants(
-    baseFile,
-    join(config.outputDirectory, dirOffset),
-    {
-      formats,
-      sizes,
-      useP3,
-    },
-  );
+  const outputs = produceVariants(baseFile, config.outputDirectory, {
+    formats,
+    sizes,
+    useP3,
+  });
+
+  const kind = (key: string) =>
+    key.includes("-blurred")
+      ? "blurred"
+      : key.includes("-original-size")
+        ? "original"
+        : key.replace(/-[0-9]+\./, "") !== key
+          ? key.includes("-p3")
+            ? "p3"
+            : "resized"
+          : "fallback";
 
   const withMeta = outputs.reduce((acc, key) => {
     const exists = existsSync(key);
@@ -80,15 +90,7 @@ export const getSourceOutputs = (
       {
         source,
         sink: key,
-        kind: key.includes("-blurred")
-          ? "blurred"
-          : key.includes("-original-size")
-            ? "original"
-            : key.replace(/-[0-9]+\./, "") !== key
-              ? key.includes("-p3")
-                ? "p3"
-                : "resized"
-              : "fallback",
+        kind: kind(key),
         exists,
         fresh: exists && statSync(key).mtimeMs > sourceStats.mtimeMs,
       } as SourceOutputFile,
