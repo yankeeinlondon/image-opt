@@ -1,5 +1,5 @@
 {
-  "name": "image-opt",
+  "name": "@yankeeinlondon/image-opt",
   "version": "0.1.5",
   "description": "Optimize your source images for the web",
   "scripts": {
