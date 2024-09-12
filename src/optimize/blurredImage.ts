@@ -1,6 +1,6 @@
 import type { Sharp } from "sharp";
 import { ConfigFor } from "src/types";
-import { getOutputOptions, log } from "src/utils";
+import { getOutputOptions } from "src/utils";
 
 export const blurredImage = (
   sharp: Sharp, //
