@@ -4,7 +4,8 @@
   "description": "Optimize your source images for the web",
   "scripts": {
     "test": "echo \"Error: no tests yet\" && exit 0",
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "release": "bumpp"
   },
   "keywords": [
     "image-optimization"
