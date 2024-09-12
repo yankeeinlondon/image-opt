@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "run-s build:*",
     "build:cli": "node scripts/build.mjs",
-    "build:frontend": "cd ./packages/frontend && pnpm build && cd -"
+    "build:frontend": "cd ./packages/frontend && pnpm install && pnpm build && cd -"
   },
   "keywords": [
     "image-optimization"
