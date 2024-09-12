@@ -19,12 +19,32 @@ export default defineConfig({
         }),
       },
     }),
-
-    // https://github.com/webfansplz/vite-plugin-vue-devtools
     VueDevTools(),
   ],
 
-  // https://github.com/vitest-dev/vitest
+  build: {
+    lib: {
+      entry: {
+        ImgOpt: path.resolve(__dirname, "src/components/ImageOpt.vue"),
+        ImgElement: path.resolve(
+          __dirname,
+          "src/components/ImageOptElement.ts",
+        ),
+      },
+      formats: ["es"],
+      name: "ImageOpt",
+      fileName: (format, entryName) => `${entryName}.mjs`,
+    },
+    rollupOptions: {
+      external: ["vue"],
+      output: {
+        globals: {
+          vue: "Vue",
+        },
+      },
+    },
+  },
+
   test: {
     include: ["test/**/*.test.ts"],
     environment: "jsdom",

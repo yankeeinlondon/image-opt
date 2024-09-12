@@ -28,6 +28,7 @@ const primaryLoaded = () => {
 };
 
 const {
+    // @ts-ignore
     src,
     formats = ["avif", "webp", "jpg"],
     sizes = [512, 768, 1024, 1200, 1600, 2400],
