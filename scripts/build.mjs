@@ -52,6 +52,12 @@ try {
   );
   execSync(`chmod +x "${copy_dest}"`);
 
+  console.log(`- 🎉 CLI build successful`);
+  console.log(`\n- starting frontend component build`);
+  execSync(`pnpm install`, { cwd: join(process.cwd(), "./packages/frontend") });
+  execSync(`pnpm build`, { cwd: join(process.cwd(), "./packages/frontend") });
+  console.log(`- 🎉 frontend build successful`);
+
   console.log();
   console.log(`- 🚀 build successful`);
 } catch (e) {

@@ -4,9 +4,7 @@
   "description": "Optimize your source images for the web",
   "scripts": {
     "test": "echo \"Error: no tests yet\" && exit 0",
-    "build": "run-s build:*",
-    "build:cli": "node scripts/build.mjs",
-    "build:frontend": "cd ./packages/frontend && pnpm install && pnpm build && cd -"
+    "build": "node scripts/build.mjs"
   },
   "keywords": [
     "image-optimization"
