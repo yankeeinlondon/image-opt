@@ -26,6 +26,10 @@
       "import": "./packages/frontend/dist/ImgElement.mjs"
     }
   },
+  "files": [
+    "dist",
+    "packages"
+  ],
   "author": "Ken Snyder <ken@ken.net>",
   "license": "MIT",
   "devDependencies": {
