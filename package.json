@@ -8,7 +8,8 @@
     "release": "bumpp"
   },
   "keywords": [
-    "image-optimization"
+    "image-optimization",
+    "performance"
   ],
   "bin": {
     "typed": "bin/io"
@@ -17,18 +18,21 @@
   "module": "./packages/frontend/dist/ImgOpt.mjs",
   "exports": {
     ".": {
-      "import": "./packages/frontend/dist/ImgOpt.mjs"
+      "import": "./packages/frontend/dist/ImgOpt.mjs",
+      "types": "./packages/frontend/dist/ImgOpt.d.ts"
     },
     "./vue": {
-      "import": "./packages/frontend/dist/ImgOpt.mjs"
+      "import": "./packages/frontend/dist/ImgOpt.mjs",
+      "types": "./packages/frontend/dist/ImgOpt.d.ts"
     },
     "./custom": {
-      "import": "./packages/frontend/dist/ImgElement.mjs"
+      "import": "./packages/frontend/dist/ImgElement.mjs",
+      "types": "./packages/frontend/dist/ImgElement.d.ts"
     }
   },
   "files": [
     "dist",
-    "packages"
+    "packages/frontend/dist"
   ],
   "author": "Ken Snyder <ken@ken.net>",
   "license": "MIT",

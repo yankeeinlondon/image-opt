@@ -6,10 +6,10 @@
 
 ```sh
 # install globally
-pnpm install -g image-opt
+pnpm install -g @yankeeinlondon/image-opt
 
 # install locally to repo
-pnpm install -D image-opt
+pnpm install -D @yankeeinlondon/image-opt
 ```
 
 ## Source to Destination Mapping
