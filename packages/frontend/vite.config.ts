@@ -1,9 +1,10 @@
 import path from "node:path";
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import VueMacros from "unplugin-vue-macros/vite";
 import VueDevTools from "vite-plugin-vue-devtools";
 import dts from "vite-plugin-dts";
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 export default defineConfig({
   resolve: {
@@ -13,6 +14,7 @@ export default defineConfig({
   },
 
   plugins: [
+    cssInjectedByJsPlugin() as unknown as Plugin,
     VueMacros({
       plugins: {
         vue: Vue({
@@ -41,13 +43,16 @@ export default defineConfig({
       fileName: (format, entryName) => `${entryName}.mjs`,
     },
     rollupOptions: {
-      external: ["vue"],
+      external: ["vue", "@vueuse/core", "inferred-types"],
       output: {
         globals: {
           vue: "Vue",
+          "@vueuse/core": "VueUse",
+          "inferred-types": "InferredTypes",
         },
       },
     },
+    cssCodeSplit: false,
   },
 
   test: {
