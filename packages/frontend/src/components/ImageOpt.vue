@@ -67,12 +67,14 @@ const blurLoaded = () => {
     if (debug) {
         console.log(`blurred image loaded: "${src}"`);
     }
+    emit("blurred", src);
     blur.value = true;
 };
 const primaryLoaded = () => {
     if (debug) {
         console.log(`primary image loaded: "${src as string}"`);
     }
+    emit("primary", src);
     primary.value = true;
 };
 
@@ -88,6 +90,10 @@ const srcset = (format: string) =>
             .join(", ");
     });
 
+/**
+ * emits events for different stages of image load
+ */
+const emit = defineEmits(['blurred','primary','full']);
 
 const a = ref(useAttrs());
 const borderRadius = computed(() => {

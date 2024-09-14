@@ -11,10 +11,12 @@
   "module": "./dist/ImageOpt.mjs",
   "exports": {
     ".": {
-      "import": "./dist/ImageOpt.mjs"
+      "import": "./dist/ImageOpt.mjs",
+      "types": "./dist/ImageOpt.d.ts"
     },
     "./custom": {
-      "import": "./dist/ImageElement.mjs"
+      "import": "./dist/ImageElement.mjs",
+      "types": "./dist/ImageElement.d.ts"
     }
   },
   "files": [
