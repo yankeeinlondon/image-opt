@@ -67,14 +67,14 @@ const blurLoaded = () => {
     if (debug) {
         console.log(`blurred image loaded: "${src}"`);
     }
-    emit("blurred", src);
+    emit("blurred", src, { vw: vw.value, alt, width: container.width, height: container.height });
     blur.value = true;
 };
 const primaryLoaded = () => {
     if (debug) {
         console.log(`primary image loaded: "${src as string}"`);
     }
-    emit("primary", src);
+    emit("primary", src, { vw: vw.value, alt, width: container.width, height: container.height });
     primary.value = true;
 };
 
