@@ -15,19 +15,19 @@
     "io": "bin/io"
   },
   "type": "module",
-  "module": "./packages/frontend/dist/ImgOpt.mjs",
+  "module": "./packages/frontend/dist/ImageOpt.mjs",
   "exports": {
     ".": {
-      "import": "./packages/frontend/dist/ImgOpt.mjs",
-      "types": "./packages/frontend/dist/ImgOpt.d.ts"
+      "import": "./packages/frontend/dist/ImageOpt.mjs",
+      "types": "./packages/frontend/dist/ImageOpt.d.ts"
     },
     "./vue": {
-      "import": "./packages/frontend/dist/ImgOpt.mjs",
-      "types": "./packages/frontend/dist/ImgOpt.d.ts"
+      "import": "./packages/frontend/dist/ImageOpt.mjs",
+      "types": "./packages/frontend/dist/ImageOpt.d.ts"
     },
     "./custom": {
-      "import": "./packages/frontend/dist/ImgElement.mjs",
-      "types": "./packages/frontend/dist/ImgElement.d.ts"
+      "import": "./packages/frontend/dist/ImageElement.mjs",
+      "types": "./packages/frontend/dist/ImageElement.d.ts"
     }
   },
   "files": [

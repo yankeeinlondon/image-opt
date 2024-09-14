@@ -27,8 +27,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        ImgOpt: path.resolve(__dirname, "src/components/ImageOpt.vue"),
-        ImgElement: path.resolve(
+        ImageOpt: path.resolve(__dirname, "src/components/ImageOpt.vue"),
+        ImageElement: path.resolve(
           __dirname,
           "src/components/ImageOptElement.ts",
         ),
