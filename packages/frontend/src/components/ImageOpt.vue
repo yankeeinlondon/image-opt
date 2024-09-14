@@ -18,8 +18,6 @@ const vw = computed(() =>
 const blur = ref(false);
 const primary = ref(false);
 
-
-
 type OverlayPosition = "left" | "right" | "top" | "bottom";
 
 const slots = useSlots();
@@ -63,17 +61,17 @@ const {
     overlayBgOpacity?: number | `${number}`;
     overlayBlur?: CssSizing;
     debug?: boolean;
-}>();
+}>(); 
 
 const blurLoaded = () => {
     if (debug) {
-        console.log(`blur loaded ${src}`);
+        console.log(`blurred image loaded: "${src}"`);
     }
     blur.value = true;
 };
 const primaryLoaded = () => {
     if (debug) {
-        console.log(`primary loaded ${src}`);
+        console.log(`primary image loaded: "${src as string}"`);
     }
     primary.value = true;
 };
