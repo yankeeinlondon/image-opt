@@ -18,14 +18,7 @@ const vw = computed(() =>
 const blur = ref(false);
 const primary = ref(false);
 
-const blurLoaded = () => {
-    console.log("blur loaded");
-    blur.value = true;
-};
-const primaryLoaded = () => {
-    console.log("primary loaded");
-    primary.value = true;
-};
+
 
 type OverlayPosition = "left" | "right" | "top" | "bottom";
 
@@ -50,7 +43,8 @@ const {
     overlayPosition = "bottom",
     overlayBgColor = "transparent",
     overlayBgOpacity = "0.9",
-    overlayBlur = "55px"
+    overlayBlur = "55px",
+    debug = false
 } = defineProps<{
     src: string;
     alt?: string;
@@ -68,7 +62,21 @@ const {
     overlayBgColor?: CssColor;
     overlayBgOpacity?: number | `${number}`;
     overlayBlur?: CssSizing;
+    debug?: boolean;
 }>();
+
+const blurLoaded = () => {
+    if (debug) {
+        console.log(`blur loaded ${src}`);
+    }
+    blur.value = true;
+};
+const primaryLoaded = () => {
+    if (debug) {
+        console.log(`primary loaded ${src}`);
+    }
+    primary.value = true;
+};
 
 const noExt = (img: string) => {
     return img.includes(".") ? img.split(/.*\./).slice(0, -1).join("") : img;
