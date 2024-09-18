@@ -25,7 +25,11 @@
       "import": "./packages/frontend/dist/ImageOpt.mjs",
       "types": "./packages/frontend/dist/ImageOpt.d.ts"
     },
-    "./custom": {
+    "./vapor": {
+      "import": "./packages/frontend/dist/ImageVapor.mjs",
+      "types": "./packages/frontend/dist/ImageVapor.d.ts"
+    },
+    "./custom-element": {
       "import": "./packages/frontend/dist/ImageElement.mjs",
       "types": "./packages/frontend/dist/ImageElement.d.ts"
     }

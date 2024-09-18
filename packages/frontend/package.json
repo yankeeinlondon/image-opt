@@ -23,7 +23,7 @@
       "import": "./dist/ImageVapor.mjs",
       "types": "./dist/ImageVapor.d.ts"
     },
-    "./custom": {
+    "./custom-element": {
       "import": "./dist/ImageElement.mjs",
       "types": "./dist/ImageElement.d.ts"
     }

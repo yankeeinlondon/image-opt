@@ -120,3 +120,45 @@ The cache mechanics are rather simple, it simply looks at the file's last modifi
 ## Vite Plugin
 
 This will eventually be made into a [Vite](https://vitejs.dev) plugin but currently just stabilizing the CLI use cases.
+
+
+## Frontend Component
+
+In addition to providing a CLI for image optimization and a ViteJS plugin for _auto_ image generation as part of your build pipeline, it also provides a frontend component to view your optimized images.
+
+### Installation
+
+This frontend component comes in three flavors:
+
+1. `VueJS Component`
+
+	```sh
+	import ImageOpt from "@yankeeinlondon/image-opt/vue";
+	```
+
+	A traditional VueJS single file component.
+
+2. `VueJS Component (using the new Vapor Mode)`
+
+	```sh
+	import ImageOpt from "@yankeeinlondon/image-opt/vapor";
+	```
+
+	A super-small and fast variant using VueJS's soon to be released "vapor mode". This component can be safely used with traditional VueJS components as well as other frameworks.
+
+	Because it does not use any of the ShadowDOM dependencies it's footprint is very small.
+
+3. `Custom Element`
+
+	```sh
+	import ImageOpt from "@yankeeinlondon/image-opt/custom-element";
+	```
+
+	Uses the browser's built in ability to leverage "custom components".
+
+
+### Functional Overview
+
+Regardless of which variant you choose, the aim is to have the functionality precisely the same across the three variants.
+
+
