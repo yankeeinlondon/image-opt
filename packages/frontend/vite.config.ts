@@ -28,6 +28,7 @@ export default defineConfig({
     lib: {
       entry: {
         ImageOpt: path.resolve(__dirname, "src/components/ImageOpt.vue"),
+        ImageVapor: path.resolve(__dirname, "src/components/ImageVapor.vue"),
         ImageElement: path.resolve(
           __dirname,
           "src/components/ImageOptElement.ts",
@@ -38,10 +39,11 @@ export default defineConfig({
       fileName: (format, entryName) => `${entryName}.mjs`,
     },
     rollupOptions: {
-      external: ["vue", "@vueuse/core", "inferred-types"],
+      external: ["vue", "@vueuse/core", "inferred-types", "@vue-vapor/vue"],
       output: {
         globals: {
           vue: "Vue",
+          "@vue-vapor/vue": "VueVapor",
           "@vueuse/core": "VueUse",
           "inferred-types": "InferredTypes",
         },

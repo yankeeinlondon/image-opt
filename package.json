@@ -54,6 +54,7 @@
     "vitest": "^2.1.1"
   },
   "dependencies": {
+    "@vue-vapor/vue": "3.20240714.0-6608bb3",
     "@yankeeinlondon/ask": "^0.2.9",
     "chalk": "^5.3.0",
     "command-line-args": "^6.0.0",

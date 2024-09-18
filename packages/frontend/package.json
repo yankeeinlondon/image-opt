@@ -9,10 +9,19 @@
     "test": "echo \"no tests yet\" && exit 0"
   },
   "module": "./dist/ImageOpt.mjs",
+  "types": "./dist/ImageOpt.d.ts",
   "exports": {
     ".": {
       "import": "./dist/ImageOpt.mjs",
       "types": "./dist/ImageOpt.d.ts"
+    },
+    "./vue": {
+      "import": "./dist/ImageOpt.mjs",
+      "types": "./dist/ImageOpt.d.ts"
+    },
+    "./vapor": {
+      "import": "./dist/ImageVapor.mjs",
+      "types": "./dist/ImageVapor.d.ts"
     },
     "./custom": {
       "import": "./dist/ImageElement.mjs",
