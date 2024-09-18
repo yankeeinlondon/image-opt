@@ -1,6 +1,6 @@
 {
   "name": "@yankeeinlondon/image-opt",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "Optimize your source images for the web",
   "scripts": {
     "test": "echo \"Error: no tests yet\" && exit 0",
